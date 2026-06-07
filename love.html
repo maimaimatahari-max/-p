@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You love me right, my dear?</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style>
+        /* RESET & BASE */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000000;
+            color: #f0f0f0;
+            font-family: 'Courier New', Courier, monospace;
+            user-select: none;
+        }
+
+        /* OVERLAY EFFEK (VIGNETTE & NOISE) */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            background: radial-gradient(circle, transparent 60%, #000 100%);
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.95);
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.3));
+            background-size: 100% 4px;
+        }
+
+        /* SCENE 1 */
+        #scene-1 {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100vh;
+            background: #020000;
+            position: relative;
+            z-index: 10;
+        }
+
+        .game-card {
+            border: 2px solid #222;
+            padding: 50px 70px;
+            border-radius: 2px;
+            background-color: rgba(5, 5, 5, 0.9);
+            box-shadow: 0 0 50px rgba(80, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 28px;
+            margin-bottom: 60px;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            text-shadow: 2px 0px #ff0000, -2px 0px #550000;
+            animation: glitch 2s infinite;
+            font-weight: lighter;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-1px, 1px); }
+            40% { transform: translate(-1px, -1px); }
+            60% { transform: translate(1px, 1px); }
+            80% { transform: translate(1px, -1px); }
+            100% { transform: translate(0); }
+        }
+
+        .button-container {
+            display: flex;
+            gap: 50px;
+            justify-content: center;
+        }
+
+        .btn-choice {
+            padding: 18px 45px;
+            font-size: 18px;
+            font-family: 'Courier New', Courier, monospace;
+            border: 1px solid #333;
+            background: transparent;
+            color: #666;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-choice:hover {
+            border-color: #800000;
+            color: #800000;
+            box-shadow: 0 0 20px rgba(128, 0, 0, 0.4);
+            background: rgba(80, 0, 0, 0.1);
+            letter-spacing: 5px;
+        }
+
+        /* YES button bisa diklik untuk sequence */
+        .btn-yes {
+            cursor: pointer;
+        }
+
+        /* SCENE 2 - HEART PINK (NO) */
+        #scene-2-pink {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            background: radial-gradient(circle at center, #0f0000 0%, #000000 90%, #000000 100%);
+            position: relative;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        /* SCENE 2 - HEART RED (YES) */
+        #scene-2-red {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            background: radial-gradient(circle at center, #0f0000 0%, #000000 90%, #000000 100%);
+            position: relative;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        /* I LOVE YOU - FONT PIXEL (PINK) */
+        .love-text-pink {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 32px;
+            color: #ff69b4;
+            margin-bottom: 30px;
+            z-index: 5;
+            text-align: center;
+            text-shadow: 
+                0 0 10px #ff69b4,
+                0 0 20px #ff69b4,
+                0 0 40px #ff69b4,
+                4px 4px 0px #000;
+            letter-spacing: 4px;
+            animation: pulse-text 2s infinite;
+        }
+
+        /* YOU FOOL ME - FONT PIXEL (RED) */
+        .love-text-red {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 32px;
+            color: #ff0000;
+            margin-bottom: 30px;
+            z-index: 5;
+            text-align: center;
+            text-shadow: 
+                0 0 10px #ff0000,
+                0 0 20px #ff0000,
+                0 0 40px #ff0000,
+                4px 4px 0px #000;
+            letter-spacing: 4px;
+            animation: pulse-text 2s infinite;
+        }
+
+        @keyframes pulse-text {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* BIG PINK HEART */
+        .big-heart-pink {
+            font-size: 220px;
+            color: #ff69b4;
+            position: relative;
+            z-index: 5;
+            animation: heartbeat 1.5s infinite ease-in-out;
+            filter: drop-shadow(0 0 30px #ff69b4) drop-shadow(0 0 60px #ff69b4) drop-shadow(0 0 90px #ffb6c1);
+        }
+
+        /* BIG RED HEART */
+        .big-heart-red {
+            font-size: 220px;
+            color: #ff0000;
+            position: relative;
+            z-index: 5;
+            animation: heartbeat 1.5s infinite ease-in-out;
+            filter: drop-shadow(0 0 30px #ff0000) drop-shadow(0 0 60px #ff0000) drop-shadow(0 0 90px #ff0000);
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            10% { transform: scale(1.1); }
+            25% { transform: scale(1); }
+            40% { transform: scale(1.15); }
+            55% { transform: scale(1); }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* FALLING CONTAINER */
+        #falling-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        .falling-text {
+            font-family: 'Press Start 2P', cursive;
+            position: absolute;
+            font-size: 10px;
+            text-transform: uppercase;
+            left: 50%;
+            top: -50px;
+            transform: translateX(-50%);
+            opacity: 0.7;
+            animation: jatuh 5s linear forwards;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        @keyframes jatuh {
+            to { transform: translateX(-50%) translateY(110vh); }
+        }
+
+        .btn-back {
+            position: absolute;
+            bottom: 40px;
+            z-index: 20;
+            padding: 12px 30px;
+            border: 1px solid #222;
+            background: transparent;
+            color: #444;
+            cursor: pointer;
+            font-family: 'Courier New', cursive;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            color: #600;
+            border-color: #600;
+            box-shadow: 0 0 15px rgba(100,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+    <div class="scanline"></div>
+
+    <!-- SCENE 1 -->
+    <div id="scene-1">
+        <div class="game-card">
+            <div class="question-text" id="question">WILL YOU STAY?</div>
+            <div class="button-container">
+                <button class="btn-choice" onclick="goScenePink()">NO</button>
+                <button class="btn-choice btn-yes" onclick="yesSequence()">YES</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCENE 2 - PINK (NO) -->
+    <div id="scene-2-pink">
+        <div class="love-text-pink">I LOVE YOU</div>
+        <div class="big-heart-pink">❤</div>
+        <div id="falling-pink"></div>
+        <button class="btn-back" onclick="kembali()">RETURN</button>
+    </div>
+
+    <!-- SCENE 2 - RED (YES) -->
+    <div id="scene-2-red">
+        <div class="love-text-red">YOU FOOL ME</div>
+        <div class="big-heart-red">❤</div>
+        <div id="falling-red"></div>
+        <button class="btn-back" onclick="kembali()">RETURN</button>
+    </div>
+    
+    <script>
+        let yesClickCount = 0;
+        
+        const pesanYes = [
+            "Really?",
+            "No way!",
+            "YOU FOOL ME!",
+            "NO WAY YOU LOVE A PERSON LIKE ME!",
+            "You scared me right?"
+        ];
+
+        function yesSequence() {
+            yesClickCount++;
+            
+            const questionEl = document.getElementById('question');
+            
+            if (yesClickCount <= 5) {
+                questionEl.innerText = pesanYes[yesClickCount - 1];
+                questionEl.style.animation = "glitch 0.3s infinite";
+            } else {
+                // Klik ke-6: masuk scene heart merah
+                goSceneRed();
+            }
+        }
+
+        // Tombol NO - Heart PINK
+        function goScenePink() {
+            document.getElementById('scene-1').style.display = 'none';
+            document.getElementById('scene-2-pink').style.display = 'flex';
+
+            setInterval(function() {
+                const container = document.getElementById('falling-pink');
+                const teks = document.createElement('div');
+                teks.innerText = "I LOVE YOU";
+                teks.className = 'falling-text';
+                teks.style.color = "#ff69b4";
+                teks.style.left = (Math.random() * 90 + 5) + '%';
+                teks.style.animationDuration = (Math.random() * 2 + 4) + 's'; 
+                container.appendChild(teks);
+                
+                setTimeout(function() { 
+                    if(teks.parentNode) teks.parentNode.removeChild(teks); 
+                }, 5000);
+            }, 150);
+        }
+
+        // Tombol YES - Heart RED
+        function goSceneRed() {
+            document.getElementById('scene-1').style.display = 'none';
+            document.getElementById('scene-2-red').style.display = 'flex';
+
+            setInterval(function() {
+                const container = document.getElementById('falling-red');
+                const teks = document.createElement('div');
+                teks.innerText = "YOU FOOL ME";
+                teks.className = 'falling-text';
+                teks.style.color = "#ff0000";
+                teks.style.left = (Math.random() * 90 + 5) + '%';
+                teks.style.animationDuration = (Math.random() * 2 + 4) + 's'; 
+                container.appendChild(teks);
+                
+                setTimeout(function() { 
+                    if(teks.parentNode) teks.parentNode.removeChild(teks); 
+                }, 5000);
+            }, 150);
+        }
+
+        function kembali() {
+            document.getElementById('scene-2-pink').style.display = 'none';
+            document.getElementById('scene-2-red').style.display = 'none';
+            document.getElementById('scene-1').style.display = 'flex';
+            
+            // Reset YES sequence
+            yesClickCount = 0;
+            document.getElementById('question').innerText = "WILL YOU STAY?";
+            document.getElementById('question').style.animation = "glitch 2s infinite";
+            
+            // Clear falling texts
+            document.getElementById('falling-pink').innerHTML = '';
+            document.getElementById('falling-red').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
